@@ -5,7 +5,7 @@ import usePakazaStore from '../../lib/store';
 import ParcelDetailModal from '../../components/ParcelDetailModal';
 
 export default function DashboardHome() {
-  const { parcels, ledger, currentRole, operatorSaccoId, setOperatorSaccoId, saccos, withdrawals, requestPayout, resetDemoData, setSelectedParcel } = usePakazaStore();
+  const { parcels, ledger, currentRole, operatorSaccoId, setOperatorSaccoId, saccos, withdrawals, requestPayout, resetDemoData, setSelectedParcel, notifications } = usePakazaStore();
   const [searchId, setSearchId] = useState('');
   const [searchResult, setSearchResult] = useState(null);
   const [showQrModal, setShowQrModal] = useState(null);
@@ -16,6 +16,7 @@ export default function DashboardHome() {
   const safeParcels = Array.isArray(parcels) ? parcels : [];
   const safeLedger = Array.isArray(ledger) ? ledger : [];
   const safeWithdrawals = Array.isArray(withdrawals) ? withdrawals : [];
+  const safeNotifications = Array.isArray(notifications) ? notifications : []; // NEW
 
   const totalRevenue = safeLedger.filter(l => l.type === 'REVENUE').reduce((sum, e) => sum + (e.total || 0), 0);
   const myParcels = safeParcels.filter(p => p.saccoId === operatorSaccoId);
@@ -39,6 +40,8 @@ export default function DashboardHome() {
       setWithdrawPhone('');
     }
   };
+
+  const unreadCount = safeNotifications.filter(n => !n.read).length; // NEW
 
   // --- ADMIN VIEW ---
   if (currentRole === 'ADMIN') {
@@ -65,8 +68,12 @@ export default function DashboardHome() {
           <div className="flex flex-wrap gap-3">
             <Link href="/settings" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition">⚙️ Manage</Link>
             <Link href="/ledger" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition">View Ledger</Link>
-            {/* NEW LIVE MAP BUTTON ADDED HERE */}
             <Link href="/map" className="bg-[#00A651] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#008F45] transition shadow-lg flex items-center gap-2">🗺️ Live Map</Link>
+            {/* NEW NOTIFICATION BUTTON */}
+            <Link href="/notifications" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition relative flex items-center gap-2">
+              🔔 Alerts
+              {unreadCount > 0 && <span className="absolute -top-2 -right-2 bg-[#ED1C24] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">{unreadCount}</span>}
+            </Link>
             <Link href="/new" className="bg-[#0047AB] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#003380] transition shadow-lg">+ New Parcel</Link>
           </div>
         </div>
