@@ -5,7 +5,7 @@ import usePakazaStore from '../../lib/store';
 import ParcelDetailModal from '../../components/ParcelDetailModal';
 
 export default function DashboardHome() {
-  const { parcels, ledger, currentRole, operatorSaccoId, setOperatorSaccoId, saccos, withdrawals, requestPayout, resetDemoData, setSelectedParcel, notifications } = usePakazaStore();
+  const { parcels, ledger, currentRole, operatorSaccoId, setOperatorSaccoId, saccos, withdrawals, requestPayout, resetDemoData, setSelectedParcel, notifications, tickets, resolveTicket } = usePakazaStore();
   const [searchId, setSearchId] = useState('');
   const [searchResult, setSearchResult] = useState(null);
   const [showQrModal, setShowQrModal] = useState(null);
@@ -17,6 +17,7 @@ export default function DashboardHome() {
   const safeLedger = Array.isArray(ledger) ? ledger : [];
   const safeWithdrawals = Array.isArray(withdrawals) ? withdrawals : [];
   const safeNotifications = Array.isArray(notifications) ? notifications : [];
+  const safeTickets = Array.isArray(tickets) ? tickets : []; // NEW
 
   const totalRevenue = safeLedger.filter(l => l.type === 'REVENUE').reduce((sum, e) => sum + (e.total || 0), 0);
   const myParcels = safeParcels.filter(p => p.saccoId === operatorSaccoId);
@@ -42,6 +43,7 @@ export default function DashboardHome() {
   };
 
   const unreadCount = safeNotifications.filter(n => !n.read).length;
+  const openTicketsCount = safeTickets.filter(t => t.status === 'OPEN').length; // NEW
 
   // --- ADMIN VIEW ---
   if (currentRole === 'ADMIN') {
@@ -73,8 +75,12 @@ export default function DashboardHome() {
               🔔 Alerts
               {unreadCount > 0 && <span className="absolute -top-2 -right-2 bg-[#ED1C24] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">{unreadCount}</span>}
             </Link>
-            {/* NEW ANALYTICS BUTTON */}
             <Link href="/analytics" className="bg-[#ED1C24] text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow-lg flex items-center gap-2">📊 Analytics</Link>
+            {/* NEW SUPPORT BUTTON */}
+            <Link href="/support" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition relative flex items-center gap-2">
+              🎫 Support
+              {openTicketsCount > 0 && <span className="absolute -top-2 -right-2 bg-[#ED1C24] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">{openTicketsCount}</span>}
+            </Link>
             <Link href="/new" className="bg-[#0047AB] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#003380] transition shadow-lg">+ New Parcel</Link>
           </div>
         </div>
@@ -93,6 +99,33 @@ export default function DashboardHome() {
             <p className="text-4xl font-black text-[#00A651]">{safeSaccos.length}</p>
           </div>
         </div>
+
+        {/* NEW: Support Tickets Section */}
+        {safeTickets.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Support Tickets</h2>
+              <span className="text-xs font-bold bg-[#ED1C24]/10 text-[#ED1C24] px-3 py-1 rounded-full">{openTicketsCount} Open</span>
+            </div>
+            <div className="space-y-3">
+              {safeTickets.map(t => (
+                <div key={t.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 rounded-xl border-l-4 border-[#ED1C24]">
+                  <div className="mb-2 sm:mb-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-bold text-[#0047AB]">{t.id}</span>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded ${t.status === 'OPEN' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{t.status}</span>
+                    </div>
+                    <p className="text-sm text-gray-700"><strong>{t.issueType}</strong> for Tracking ID: {t.trackingId}</p>
+                    <p className="text-xs text-gray-500 mt-1">{t.description}</p>
+                  </div>
+                  {t.status === 'OPEN' && (
+                    <button onClick={() => resolveTicket(t.id)} className="bg-[#00A651] text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-[#008F45] transition">Mark Resolved</button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
           <h2 className="text-xl font-bold mb-6 text-gray-900">Operator QR Codes</h2>
@@ -242,6 +275,14 @@ export default function DashboardHome() {
             </div>
           )}
           {searchResult === 'NOT_FOUND' && <div className="bg-red-50 border-2 border-red-200 p-4 rounded-xl text-left text-[#ED1C24] font-semibold">❌ Parcel not found</div>}
+          
+          {/* NEW: Support Link for Clients */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <p className="text-sm text-gray-500 mb-3">Having an issue with your parcel?</p>
+            <Link href="/support" className="inline-flex items-center gap-2 text-[#ED1C24] font-bold hover:underline">
+              🎫 Report an Issue / Open Support Ticket
+            </Link>
+          </div>
         </div>
       </div>
     );
