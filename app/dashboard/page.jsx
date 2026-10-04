@@ -5,19 +5,21 @@ import usePakazaStore from '../../lib/store';
 import ParcelDetailModal from '../../components/ParcelDetailModal';
 
 export default function DashboardHome() {
-  const { parcels, ledger, currentRole, operatorSaccoId, setOperatorSaccoId, saccos, withdrawals, requestPayout, resetDemoData, setSelectedParcel, notifications, tickets, resolveTicket } = usePakazaStore();
+  const { parcels, ledger, currentRole, operatorSaccoId, setOperatorSaccoId, saccos, withdrawals, requestPayout, resetDemoData, setSelectedParcel, notifications, tickets, resolveTicket, promoCodes, runBatchSettlement } = usePakazaStore();
   const [searchId, setSearchId] = useState('');
   const [searchResult, setSearchResult] = useState(null);
   const [showQrModal, setShowQrModal] = useState(null);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawPhone, setWithdrawPhone] = useState('');
+  const [isSettling, setIsSettling] = useState(false);
 
   const safeSaccos = Array.isArray(saccos) ? saccos : [];
   const safeParcels = Array.isArray(parcels) ? parcels : [];
   const safeLedger = Array.isArray(ledger) ? ledger : [];
   const safeWithdrawals = Array.isArray(withdrawals) ? withdrawals : [];
   const safeNotifications = Array.isArray(notifications) ? notifications : [];
-  const safeTickets = Array.isArray(tickets) ? tickets : []; // NEW
+  const safeTickets = Array.isArray(tickets) ? tickets : [];
+  const safePromos = Array.isArray(promoCodes) ? promoCodes : [];
 
   const totalRevenue = safeLedger.filter(l => l.type === 'REVENUE').reduce((sum, e) => sum + (e.total || 0), 0);
   const myParcels = safeParcels.filter(p => p.saccoId === operatorSaccoId);
@@ -42,10 +44,23 @@ export default function DashboardHome() {
     }
   };
 
-  const unreadCount = safeNotifications.filter(n => !n.read).length;
-  const openTicketsCount = safeTickets.filter(t => t.status === 'OPEN').length; // NEW
+  const handleBatchSettlement = () => {
+    setIsSettling(true);
+    setTimeout(() => {
+      runBatchSettlement();
+      setIsSettling(false);
+    }, 2000);
+  };
 
-  // --- ADMIN VIEW ---
+  const unreadCount = safeNotifications.filter(n => !n.read).length;
+  const openTicketsCount = safeTickets.filter(t => t.status === 'OPEN').length;
+
+  const leaderboardData = safeSaccos.map(s => {
+    const parcelsForSacco = safeParcels.filter(p => p.saccoId === s.id);
+    const totalEarned = parcelsForSacco.reduce((sum, p) => sum + Math.round((p.price || 0) * 0.45), 0);
+    return { name: s.name, color: s.color, count: parcelsForSacco.length, earned: totalEarned };
+  }).sort((a, b) => b.earned - a.earned);
+
   if (currentRole === 'ADMIN') {
     return (
       <div className="space-y-8 animate-slide-up">
@@ -70,13 +85,12 @@ export default function DashboardHome() {
           <div className="flex flex-wrap gap-3">
             <Link href="/settings" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition">⚙️ Manage</Link>
             <Link href="/ledger" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition">View Ledger</Link>
-            <Link href="/map" className="bg-[#00A651] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#008F45] transition shadow-lg flex items-center gap-2">🗺️ Live Map</Link>
+            <Link href="/map" className="bg-[#00A651] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#008F45] transition shadow-lg flex items-center gap-2">️ Live Map</Link>
             <Link href="/notifications" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition relative flex items-center gap-2">
               🔔 Alerts
               {unreadCount > 0 && <span className="absolute -top-2 -right-2 bg-[#ED1C24] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">{unreadCount}</span>}
             </Link>
             <Link href="/analytics" className="bg-[#ED1C24] text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow-lg flex items-center gap-2">📊 Analytics</Link>
-            {/* NEW SUPPORT BUTTON */}
             <Link href="/support" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition relative flex items-center gap-2">
               🎫 Support
               {openTicketsCount > 0 && <span className="absolute -top-2 -right-2 bg-[#ED1C24] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">{openTicketsCount}</span>}
@@ -100,7 +114,62 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        {/* NEW: Support Tickets Section */}
+        {/* NEW: Batch Settlement & Leaderboard Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Driver Leaderboard */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-900"> Top Performing Fleets</h2>
+              <span className="text-xs font-bold bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">Live Rankings</span>
+            </div>
+            <div className="space-y-4">
+              {leaderboardData.map((fleet, index) => (
+                <div key={index} className="flex items-center gap-4">
+                  <div className={`w-10 h-10 ${fleet.color} rounded-xl flex items-center justify-center text-white font-black text-lg shadow-sm`}>
+                    {index + 1}
+                  </div>
+                  <div className="flex-grow">
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm font-bold text-gray-800">{fleet.name}</span>
+                      <span className="text-sm font-black text-[#00A651]">KES {fleet.earned.toLocaleString()}</span>
+                    </div>
+                    <p className="text-xs text-gray-500">{fleet.count} parcels delivered</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Batch Settlement Engine */}
+          <div className="bg-gradient-to-br from-[#0047AB] to-[#003380] rounded-2xl shadow-lg p-6 text-white relative overflow-hidden">
+            <div className="relative z-10">
+              <h2 className="text-xl font-bold mb-2">Automated Settlement Engine</h2>
+              <p className="text-blue-200 text-sm mb-6">Instantly calculate and disburse the 45% operator share to all active SACCO fleets simultaneously.</p>
+              
+              <button 
+                onClick={handleBatchSettlement}
+                disabled={isSettling}
+                className="w-full bg-[#00A651] hover:bg-[#008F45] text-white py-4 rounded-xl font-black text-lg transition shadow-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isSettling ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing M-Pesa B2C...
+                  </>
+                ) : (
+                  <>💸 Run Weekly Settlement</>
+                )}
+              </button>
+              <p className="text-xs text-blue-300 mt-4 text-center">Secure M-Pesa B2C API Integration</p>
+            </div>
+            <div className="absolute -right-10 -bottom-10 text-9xl opacity-10">💰</div>
+          </div>
+        </div>
+
         {safeTickets.length > 0 && (
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
             <div className="flex justify-between items-center mb-6">
@@ -165,7 +234,6 @@ export default function DashboardHome() {
     );
   }
 
-  // --- OPERATOR VIEW ---
   if (currentRole === 'OPERATOR') {
     return (
       <div className="space-y-6 animate-slide-up">
@@ -227,7 +295,6 @@ export default function DashboardHome() {
     );
   }
 
-  // --- STAFF VIEW ---
   if (currentRole === 'STAFF') {
     return (
       <div className="space-y-6 animate-slide-up max-w-2xl mx-auto text-center pt-10">
@@ -241,7 +308,6 @@ export default function DashboardHome() {
     );
   }
 
-  // --- CLIENT VIEW ---
   if (currentRole === 'CLIENT') {
     const currentStep = searchResult && searchResult !== 'NOT_FOUND' ? getTimelineStep(searchResult.status) : 0;
     const steps = [{ id: 'PAID', label: 'Booked & Paid' }, { id: 'IN_TRANSIT', label: 'In Transit' }, { id: 'ARRIVED', label: 'Arrived at Hub' }, { id: 'COLLECTED', label: 'Collected' }];
@@ -276,11 +342,10 @@ export default function DashboardHome() {
           )}
           {searchResult === 'NOT_FOUND' && <div className="bg-red-50 border-2 border-red-200 p-4 rounded-xl text-left text-[#ED1C24] font-semibold">❌ Parcel not found</div>}
           
-          {/* NEW: Support Link for Clients */}
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500 mb-3">Having an issue with your parcel?</p>
             <Link href="/support" className="inline-flex items-center gap-2 text-[#ED1C24] font-bold hover:underline">
-              🎫 Report an Issue / Open Support Ticket
+               Report an Issue / Open Support Ticket
             </Link>
           </div>
         </div>
