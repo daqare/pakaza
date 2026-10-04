@@ -16,7 +16,7 @@ export default function DashboardHome() {
   const safeParcels = Array.isArray(parcels) ? parcels : [];
   const safeLedger = Array.isArray(ledger) ? ledger : [];
   const safeWithdrawals = Array.isArray(withdrawals) ? withdrawals : [];
-  const safeNotifications = Array.isArray(notifications) ? notifications : []; // NEW
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
 
   const totalRevenue = safeLedger.filter(l => l.type === 'REVENUE').reduce((sum, e) => sum + (e.total || 0), 0);
   const myParcels = safeParcels.filter(p => p.saccoId === operatorSaccoId);
@@ -41,7 +41,7 @@ export default function DashboardHome() {
     }
   };
 
-  const unreadCount = safeNotifications.filter(n => !n.read).length; // NEW
+  const unreadCount = safeNotifications.filter(n => !n.read).length;
 
   // --- ADMIN VIEW ---
   if (currentRole === 'ADMIN') {
@@ -69,11 +69,12 @@ export default function DashboardHome() {
             <Link href="/settings" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition">⚙️ Manage</Link>
             <Link href="/ledger" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition">View Ledger</Link>
             <Link href="/map" className="bg-[#00A651] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#008F45] transition shadow-lg flex items-center gap-2">🗺️ Live Map</Link>
-            {/* NEW NOTIFICATION BUTTON */}
             <Link href="/notifications" className="bg-white text-[#0047AB] border-2 border-[#0047AB] px-4 py-2 rounded-lg font-semibold hover:bg-[#0047AB] hover:text-white transition relative flex items-center gap-2">
               🔔 Alerts
               {unreadCount > 0 && <span className="absolute -top-2 -right-2 bg-[#ED1C24] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">{unreadCount}</span>}
             </Link>
+            {/* NEW ANALYTICS BUTTON */}
+            <Link href="/analytics" className="bg-[#ED1C24] text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow-lg flex items-center gap-2">📊 Analytics</Link>
             <Link href="/new" className="bg-[#0047AB] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#003380] transition shadow-lg">+ New Parcel</Link>
           </div>
         </div>
@@ -163,7 +164,7 @@ export default function DashboardHome() {
         </div>
         <div className="bg-gradient-to-br from-[#0047AB] to-[#003380] text-white p-8 rounded-2xl shadow-2xl">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl backdrop-blur-sm">🚐</div>
+            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl backdrop-blur-sm"></div>
             <div>
               <h1 className="text-2xl font-black">Driver Portal</h1>
               <p className="text-blue-200 text-sm">Logged in as: {mySacco?.name} Fleet</p>
@@ -198,7 +199,7 @@ export default function DashboardHome() {
     return (
       <div className="space-y-6 animate-slide-up max-w-2xl mx-auto text-center pt-10">
         <div className="bg-white p-10 rounded-2xl shadow-2xl border border-gray-100">
-          <div className="text-6xl mb-4">📦</div>
+          <div className="text-6xl mb-4"></div>
           <h1 className="text-3xl font-black mb-2 text-gray-900">Counter Staff Portal</h1>
           <p className="text-gray-500 mb-8">Fast intake and M-Pesa integration.</p>
           <Link href="/new" className="block w-full bg-[#0047AB] text-white text-xl py-4 rounded-xl font-bold shadow-lg hover:bg-[#003380] transition">+ Book New Parcel</Link>
