@@ -15,17 +15,6 @@ export default function PitchDeck() {
   }, []);
 
   // --- REUSABLE SVG ILLUSTRATIONS ---
-  const MapIllustration = () => (
-    <svg viewBox="0 0 200 200" className="w-full h-full opacity-90">
-      <path d="M40,100 Q60,80 80,100 T120,90 T160,110" fill="none" stroke="#00A651" strokeWidth="2" strokeDasharray="4 4" />
-      <circle cx="40" cy="100" r="4" fill="#0047AB" />
-      <circle cx="120" cy="90" r="4" fill="#0047AB" />
-      <circle cx="160" cy="110" r="4" fill="#ED1C24" />
-      <circle cx="40" cy="100" r="8" fill="#0047AB" opacity="0.3" />
-      <circle cx="160" cy="110" r="8" fill="#ED1C24" opacity="0.3" />
-    </svg>
-  );
-
   const DashboardMockup = () => (
     <div className="w-full h-full bg-gray-900 rounded-xl p-4 shadow-2xl border border-gray-700 flex flex-col">
       <div className="flex gap-2 mb-4">
@@ -209,7 +198,7 @@ export default function PitchDeck() {
           </div>
         </div>
 
-        {/* ================= SLIDE 7: COMPETITIVE MOAT (NEW) ================= */}
+        {/* ================= SLIDE 7: COMPETITIVE MOAT ================= */}
         <div className={`absolute inset-0 bg-white p-20 flex flex-col transition-all duration-700 ${currentSlide === 6 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}`}>
           <div className="text-[#0047AB] font-black text-sm tracking-widest mb-4">06 / COMPETITIVE ADVANTAGE</div>
           <h2 className="text-5xl font-black text-gray-900 mb-16">Why We Win. <span className="text-gray-400 font-medium text-3xl block mt-2">Our Unfair Advantage.</span></h2>
@@ -270,47 +259,84 @@ export default function PitchDeck() {
           </div>
         </div>
 
-        {/* ================= SLIDE 9: FINANCIAL PROJECTIONS (NEW) ================= */}
+        {/* ================= SLIDE 9: FINANCIAL PROJECTIONS (UPDATED) ================= */}
         <div className={`absolute inset-0 bg-white p-20 flex flex-col transition-all duration-700 ${currentSlide === 8 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
           <div className="text-[#0047AB] font-black text-sm tracking-widest mb-4">08 / FINANCIAL PROJECTIONS</div>
-          <h2 className="text-5xl font-black text-gray-900 mb-16">Path to Profitability</h2>
+          <h2 className="text-5xl font-black text-gray-900 mb-12">Path to <span className="text-[#00A651]">135M KES</span> Annual Revenue</h2>
           
-          <div className="flex-grow flex gap-16 items-end">
-            <div className="w-2/3 h-80 flex items-end justify-between gap-4 px-8 border-b-2 border-l-2 border-gray-200 pb-4 relative">
-              {[40, 120, 350, 800, 1500].map((val, i) => (
-                <div key={i} className="flex flex-col items-center w-1/5 group">
-                  <div className="text-sm font-bold text-gray-500 mb-2 opacity-0 group-hover:opacity-100 transition">KES {val}K</div>
-                  <div className="w-full bg-[#0047AB] rounded-t-lg transition-all duration-1000 hover:bg-[#00A651]" style={{height: `${(val/1500)*100}%`}}></div>
-                  <div className="mt-4 font-bold text-gray-700">Yr {i+1}</div>
+          <div className="flex-grow flex gap-12">
+            {/* Left: Unit Economics & Projections */}
+            <div className="w-1/2 space-y-6">
+              <div className="bg-gray-50 p-8 rounded-3xl border border-gray-200">
+                <h3 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2">
+                  <span className="w-2 h-8 bg-[#0047AB] rounded-full"></span>
+                  Year 3 Unit Economics
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center border-b border-gray-200 pb-3">
+                    <span className="text-gray-600 font-medium">Avg. Parcel Value</span>
+                    <span className="text-2xl font-black text-gray-900">KES 500</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-gray-200 pb-3">
+                    <span className="text-gray-600 font-medium">Daily Volume Target</span>
+                    <span className="text-2xl font-black text-[#0047AB]">1,500 Parcels</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-gray-200 pb-3">
+                    <span className="text-gray-600 font-medium">Monthly Gross Transaction Value</span>
+                    <span className="text-2xl font-black text-gray-900">KES 22.5M</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-[#00A651] font-bold">PAKAZA Revenue (50% Take Rate)</span>
+                    <span className="text-3xl font-black text-[#00A651]">KES 11.25M / mo</span>
+                  </div>
                 </div>
-              ))}
-              <div className="absolute top-10 left-10 text-xs text-gray-400">Monthly Recurring Revenue (KES)</div>
-            </div>
-            <div className="w-1/3 space-y-6">
-              <div className="bg-green-50 p-6 rounded-2xl border border-green-100">
-                <div className="text-sm text-green-600 font-bold mb-1">Year 3 Target</div>
-                <div className="text-3xl font-black text-gray-900">15,000</div>
-                <div className="text-gray-500">Parcels / Day</div>
               </div>
-              <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
-                <div className="text-sm text-[#0047AB] font-bold mb-1">Gross Margin</div>
-                <div className="text-3xl font-black text-gray-900">68%</div>
-                <div className="text-gray-500">Software-led economics</div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                  <div className="text-sm text-[#0047AB] font-bold mb-1">Gross Margin</div>
+                  <div className="text-3xl font-black text-gray-900">72%</div>
+                  <div className="text-gray-500 text-sm">Software-led, asset-light model</div>
+                </div>
+                <div className="bg-green-50 p-6 rounded-2xl border border-green-100">
+                  <div className="text-sm text-green-600 font-bold mb-1">Break-even</div>
+                  <div className="text-3xl font-black text-gray-900">Month 18</div>
+                  <div className="text-gray-500 text-sm">At ~400 parcels/day</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Growth Chart */}
+            <div className="w-1/2 flex flex-col justify-end">
+              <div className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider">Monthly Revenue Growth (KES Millions)</div>
+              <div className="h-80 flex items-end justify-between gap-4 px-4 border-b-2 border-l-2 border-gray-200 pb-4 relative">
+                {[1.5, 4.5, 11.25].map((val, i) => (
+                  <div key={i} className="flex flex-col items-center w-1/3 group">
+                    <div className="text-sm font-bold text-[#00A651] mb-2 opacity-0 group-hover:opacity-100 transition">KES {val}M</div>
+                    <div 
+                      className="w-full bg-[#0047AB] rounded-t-xl transition-all duration-1000 hover:bg-[#00A651] relative overflow-hidden" 
+                      style={{height: `${(val/12)*100}%`}}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    </div>
+                    <div className="mt-4 font-black text-gray-700 text-lg">Year {i+1}</div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
-        {/* ================= SLIDE 10: TEAM (NEW) ================= */}
+        {/* ================= SLIDE 10: TEAM ================= */}
         <div className={`absolute inset-0 bg-[#f8fafc] p-20 flex flex-col transition-all duration-700 ${currentSlide === 9 ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
           <div className="text-[#0047AB] font-black text-sm tracking-widest mb-4">09 / THE TEAM</div>
           <h2 className="text-5xl font-black text-gray-900 mb-16">Built by Operators & Engineers.</h2>
           
           <div className="flex-grow flex justify-center gap-12">
             {[
-              { name: '[Abdiweli Elmi]', role: 'Founder & CEO', bio: 'Logistics industry veteran. 10+ years in East African transport networks.' },
-              { name: '[Abdiweli Elmi]', role: 'Chief Technology Officer', bio: 'Ex-Fintech engineer. Specialist in M-Pesa Daraja API and scalable systems.' },
-              { name: '[Mike Mulei]', role: 'Chief Operating Officer', bio: 'Expert in SACCO relations and last-mile operational efficiency.' }
+              { name: 'Abdiweli Elmi', role: 'Founder & CEO', bio: 'Logistics industry veteran. 10+ years in East African transport networks.' },
+              { name: 'Abdiweli Elmi', role: 'Chief Technology Officer', bio: 'Ex-Fintech engineer. Specialist in M-Pesa Daraja API and scalable systems.' },
+              { name: 'Mike Mulei', role: 'Chief Operating Officer', bio: 'Expert in SACCO relations and last-mile operational efficiency.' }
             ].map((member, i) => (
               <div key={i} className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 w-1/3 text-center">
                 <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-6 flex items-center justify-center text-4xl text-gray-400">👤</div>
@@ -352,7 +378,7 @@ export default function PitchDeck() {
           </div>
 
           <div className="text-center border-t border-white/20 pt-8">
-            <h3 className="text-3xl font-bold mb-2">[Abdiweli Mohamed Elmi]</h3>
+            <h3 className="text-3xl font-bold mb-2">Abdiweli Mohamed Elmi</h3>
             <p className="text-blue-200 text-lg">ceo@pakaza.network | +254 722 234807</p>
           </div>
         </div>
