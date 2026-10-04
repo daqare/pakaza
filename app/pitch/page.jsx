@@ -308,9 +308,9 @@ export default function PitchDeck() {
           
           <div className="flex-grow flex justify-center gap-12">
             {[
-              { name: '[Your Name]', role: 'Founder & CEO', bio: 'Logistics industry veteran. 10+ years in East African transport networks.' },
-              { name: '[CTO Name]', role: 'Chief Technology Officer', bio: 'Ex-Fintech engineer. Specialist in M-Pesa Daraja API and scalable systems.' },
-              { name: '[COO Name]', role: 'Chief Operating Officer', bio: 'Expert in SACCO relations and last-mile operational efficiency.' }
+              { name: '[Abdiweli Elmi]', role: 'Founder & CEO', bio: 'Logistics industry veteran. 10+ years in East African transport networks.' },
+              { name: '[Abdiweli Elmi]', role: 'Chief Technology Officer', bio: 'Ex-Fintech engineer. Specialist in M-Pesa Daraja API and scalable systems.' },
+              { name: '[Mike Mulei]', role: 'Chief Operating Officer', bio: 'Expert in SACCO relations and last-mile operational efficiency.' }
             ].map((member, i) => (
               <div key={i} className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 w-1/3 text-center">
                 <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-6 flex items-center justify-center text-4xl text-gray-400">👤</div>
@@ -352,8 +352,8 @@ export default function PitchDeck() {
           </div>
 
           <div className="text-center border-t border-white/20 pt-8">
-            <h3 className="text-3xl font-bold mb-2">[Your Name]</h3>
-            <p className="text-blue-200 text-lg">founder@pakaza.network | +254 7XX XXX XXX</p>
+            <h3 className="text-3xl font-bold mb-2">[Abdiweli Mohamed Elmi]</h3>
+            <p className="text-blue-200 text-lg">ceo@pakaza.network | +254 722 234807</p>
           </div>
         </div>
 
